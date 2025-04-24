@@ -6,19 +6,20 @@ import Description from './Description';
 import Notification from './Notification';
 
 export default function App() {
-  const savedFeedback = JSON.parse(localStorage.getItem('feedback')) || {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
-
-  const [taskCount, setTaskCount] = useState(savedFeedback);
-
-  useEffect(() => {
-    localStorage.setItem('feedback', JSON.stringify(taskCount));
-  }, [taskCount]);
+  const [taskCount, setTaskCount] = useState(() => {
+    const savedFeedback = JSON.parse(localStorage.getItem('feedback'));
+    return savedFeedback || {
+      good: 0,
+      neutral: 0,
+      bad: 0,
+    };
+  });
 
   const totalFeedback = taskCount.good + taskCount.neutral + taskCount.bad;
+
+  const positiveFeedbackPercentage = totalFeedback > 0 
+    ? (taskCount.good / (taskCount.good + taskCount.bad)) * 100
+    : 0;
 
   const updateFeedback = (feedbackType) => {
     setTaskCount((prev) => ({
@@ -35,6 +36,10 @@ export default function App() {
     });
   };
 
+  useEffect(() => {
+    localStorage.setItem('feedback', JSON.stringify(taskCount));
+  }, [taskCount]);
+
   return (
     <div className={css.container}>
       <Description />
@@ -45,7 +50,10 @@ export default function App() {
       />
       
       {totalFeedback > 0 ? (
-        <Feedback stats={taskCount} />
+        <Feedback
+          stats={taskCount}
+          positiveFeedbackPercentage={positiveFeedbackPercentage}
+        />
       ) : (
         <Notification message="No feedback yet" />
       )}
