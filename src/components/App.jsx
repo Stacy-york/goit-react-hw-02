@@ -18,7 +18,7 @@ export default function App() {
   const totalFeedback = taskCount.good + taskCount.neutral + taskCount.bad;
 
   const positiveFeedbackPercentage = totalFeedback > 0 
-    ? Math.round((taskCount.good / (taskCount.good + taskCount.bad)) * 100)
+    ? Math.round((taskCount.good / totalFeedback) * 100)
     : 0;
 
   const updateFeedback = (feedbackType) => {
